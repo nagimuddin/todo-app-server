@@ -10,39 +10,44 @@ app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.55fmber.mongodb.net/?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverApi: ServerApiVersion.v1,
+});
 async function run() {
-    try {
-      await client.connect();
-      const taskCollection = client.db("todo_list").collection("task");
+  try {
+    await client.connect();
+    const taskCollection = client.db("todo_list").collection("task");
 
-      app.get('/task', async(req, res) => {
-        const newTask = req.body;
-        console.log('adding new task', newTask);
-        const result = await taskCollection.insertAll(newTask);
-        res.send(result);
-      })
-
-      // Get Tools
-      app.get('/task', async (req, res) => {
-        const query = {};
-        const task = await taskCollection.find(query).toArray();
-        res.send(task);
-    })
+    app.get("/task", async (req, res) => {
+      const newTask = req.body;
+      console.log("adding new task", newTask);
+      const result = await taskCollection.insertAll(newTask);
+      res.send(result);
+    });
 
     // Get Tools
-    app.post('/task', async (req, res) => {
+    app.get("/task", async (req, res) => {
+      const query = {};
+      const task = await taskCollection.find(query).toArray();
+      res.send(task);
+    });
+
+    // Get Tools
+    app.post("/task", async (req, res) => {
       const task = req.body;
       const result = await taskCollection.insertOne(task);
       res.send({ success: true });
-  })
-
-
-
-    }
-    finally{
-
-    }
+    });
+    //delete Tools
+    app.delete("/task/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await taskCollection.deleteOne({ _id: ObjectId(id) });
+      res.send({ success: true });
+    });
+  } finally {
+  }
 }
 run().catch(console.dir);
 
