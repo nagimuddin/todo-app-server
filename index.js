@@ -46,6 +46,19 @@ async function run() {
       const result = await taskCollection.deleteOne({ _id: ObjectId(id) });
       res.send({ success: true });
     });
+    //update service
+    app.put("/task/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: ObjectId(id) };
+      const newTask = req.body;
+      const { available } = newTask;
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: { available },
+      };
+      const result = await taskCollection.updateOne(query, updateDoc, options);
+      res.send({ message: "updated" });
+    });
   } finally {
   }
 }
