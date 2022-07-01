@@ -20,13 +20,6 @@ async function run() {
     await client.connect();
     const taskCollection = client.db("todo_list").collection("task");
 
-    app.get("/task", async (req, res) => {
-      const newTask = req.body;
-      console.log("adding new task", newTask);
-      const result = await taskCollection.insertAll(newTask);
-      res.send(result);
-    });
-
     // Get Tools
     app.get("/task", async (req, res) => {
       const query = {};
@@ -38,13 +31,21 @@ async function run() {
     app.post("/task", async (req, res) => {
       const task = req.body;
       const result = await taskCollection.insertOne(task);
-      res.send({ success: true });
+      res.send(result);
     });
     //delete Tools
     app.delete("/task/:id", async (req, res) => {
       const id = req.params.id;
       const result = await taskCollection.deleteOne({ _id: ObjectId(id) });
       res.send({ success: true });
+    });
+
+    //single service
+    app.get("/task/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: ObjectId(id) };
+      const result = await taskCollection.findOne(query);
+      res.send(result);
     });
     //update service
     app.put("/task/:id", async (req, res) => {
