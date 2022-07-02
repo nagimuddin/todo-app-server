@@ -21,6 +21,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     await client.connect();
+    console.log('connect to mongodb');
     const taskCollection = client.db("todo_list").collection("task");
 
     // Get Tools
@@ -52,6 +53,7 @@ async function run() {
       const result = await taskCollection.findOne(query);
       res.send(result);
     });
+
     //update service
     app.put("/task/:id", async (req, res) => {
       const { id } = req.params;
@@ -65,9 +67,12 @@ async function run() {
       const result = await taskCollection.updateOne(query, updateDoc, options);
       res.send({ message: "updated" });
     });
-  } finally {
+
+  } 
+  finally {
   }
 }
+
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
